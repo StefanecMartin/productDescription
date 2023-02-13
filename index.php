@@ -1,5 +1,23 @@
 <?php
 include "./db.php";
 
-echo 'hello world';
+
 $onix=getConn();
+
+$countries = selectCountries($onix);
+
+createHelpTables($onix,key($countries));
+
+
+
+
+
+
+
+
+
+
+
+
+closeConn($onix);
+?>
