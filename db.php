@@ -4,6 +4,11 @@ define('USER', 'onix');
 define('PASS', 'Yezu4FdAQicOwmwq3TAQ');
 define('DB', 'onix');
 
+include "./objects/Product.php";
+include "./objects/Lens.php";
+include "./objects/InterLens.php";
+include "./objects/Frame.php";
+
 
 function getConn()
 {
@@ -17,10 +22,10 @@ function getConn()
     }
 }
 
-function closeConn($conn){
+function closeConn($conn)
+{
     mysqli_close($conn);
 }
-
 
 function selectCountries($conn)
 {
@@ -36,7 +41,8 @@ function selectCountries($conn)
     return $map;
 }
 
-function createHelpTables($conn, $countryCode){
+function createHelpTables($conn, $countryCode)
+{
     $query1 = "create table lens_conditions_description AS " .
         "select l.id as lens_id, if(group_concat(c.id SEPARATOR ',') = '1,2,3,4', SUBSTRING_INDEX(SUBSTRING_INDEX(group_concat(c.conditions_" . mb_strtolower($countryCode) . " SEPARATOR ' / '),' / ',4),' / ',-1) ,group_concat(c.conditions_" . mb_strtolower($countryCode) . " SEPARATOR ' / '))  as lens_conditions, " .
         "if(group_concat(c.id SEPARATOR ',') = '1,2,3,4', SUBSTRING_INDEX(SUBSTRING_INDEX(group_concat(c2.conditions_" . mb_strtolower($countryCode) . " SEPARATOR ' / '),' / ',4),' / ',-1) ,group_concat(c2.conditions_" . mb_strtolower($countryCode) . " SEPARATOR ' / '))  as condition_string " .
@@ -45,8 +51,6 @@ function createHelpTables($conn, $countryCode){
         "join conditions c2 ON lens_conditions.conditions_id = c2.id " .
         "join conditions_description c ON lens_conditions.conditions_id = c.id " .
         "GROUP BY l.id;";
-    echo $query1;
-    echo '<br><br>';
 
     $query2 = "create table bundle_details_description as " .
         "select " .
@@ -67,23 +71,181 @@ function createHelpTables($conn, $countryCode){
         "left join lens_conditions_description lcd on l.id = lcd.lens_id " .
         "join lens_color lc on l.lens_color_id = lc.id " .
         "join lens_color_translations lct on lct.lens_color_id = lc.id)t10 on t10.bundle_product_id = bundle_product.id; ";
-    echo $query2;
-    echo '<br><br>';
 
     $query3 = "alter table lens_conditions_description add FOREIGN KEY (lens_id) REFERENCES lens (id);";
-    echo $query3;
-    echo '<br><br>';
 
     $query4 = "alter table bundle_details_description add FOREIGN KEY (bundle_product_id) REFERENCES bundle_product (id);";
-    echo $query4;
-    echo '<br><br>';
 
     $query5 = "drop table if exists lens_conditions_description;";
-    echo $query5;
-    echo '<br><br>';
 
     $query6 = "drop table if exists bundle_details_description;";
-    echo $query6;
-    echo '<br><br>';
+
+    if (!mysqli_query($conn, $query5)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query6)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query1)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query2)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query3)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query4)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+
+    echo 'Help tables created!<br>';
 }
 
+function dropHelpTables($conn)
+{
+    $query1 = 'drop table lens_conditions_description';
+
+    $query2 = 'drop table bundle_details_description';
+
+    if (!mysqli_query($conn, $query1)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+    if (!mysqli_query($conn, $query2)) {
+        echo("Error description: " . mysqli_error($conn));
+    }
+
+    echo 'Help tables dropped!<br>';
+}
+
+function selectProductData($conn, $countryCode, $countryId)
+{
+    $query = "select distinct " .
+        "bundle_product.bundle_sku as sku, " .
+        "bundle_product.id as bundle_product_id, " .
+        "attribute_set.label as attribute_set, " .
+        "model.model_group, " .
+        "gender.label as gender, " .
+        "frame_shape.frame_shape, " .
+        "frame_shape.frame_shape_url, " .
+        "frame_shape.face_shape_url, " .
+        "frame_type.frame_type, " .
+        "if(polarized.bundle_product_id is null,'No','Yes') as polarized, " .
+        "if(pf.features_id is null,'No','Yes') as photochromic, " .
+        "material.label as material, " .
+        "lens.category as category, " .
+        "lens.vlt as vlt, " .
+        "manufacturer_lens_color.color as manufacturer_lens_color, " .
+        "lct." . mb_strtolower($countryCode) . "_text as lens_color, " .
+        "lens_color.picture_url as lens_color_url, " .
+        "lens_conditions_description.lens_conditions as lens_conditions, " .
+        "lens_conditions_description.condition_string as condition_string, " .
+        "lens_pictures.url as lens_url, " .
+        "brand.name as brand, " .
+        "brand.brand_logo_url, " .
+        "bundle_product.manufacturer_sku, " .
+        "naming_system.model as model, " .
+        "naming_system.name as name, " .
+        "brand_sentences." . mb_strtolower($countryCode) . "_text as brand_sentence_" . mb_strtolower($countryCode) . ", " .
+        "model_sentences." . mb_strtolower($countryCode) . "_text as model_sentence_" . mb_strtolower($countryCode) . ", " .
+        "bundle_product_sentences." . mb_strtolower($countryCode) . "_text as bundle_sentence_" . mb_strtolower($countryCode) . ", " .
+        "bdd.technologies, " .
+        "bdd.il_man_lens_color, " .
+        "bdd.il_lens_color, " .
+        "bdd.il_vlt, " .
+        "bdd.il_category, " .
+        "bdd.il_lens_conditions, " .
+        "bdd.il_lens_color_url, " .
+        "bdd.il_picture_url, " .
+        "bdd.il_condition_string, " .
+        "cd.text as custom_description_" . mb_strtolower($countryCode) . " " .
+        "from " .
+        "product " .
+        "join bundle_product on (product.bundle_product_id = bundle_product.id) " .
+        "join model on (bundle_product.model_id = model.id) " .
+        "join brand on (model.brand_id = brand.id) " .
+        "join attribute_set on (model.attribute_set_id = attribute_set.id) " .
+        "join frame_shape on (model.frame_shape_id = frame_shape.id) " .
+        "join frame_type on (model.frame_type_id = frame_type.id) " .
+        "left join product_features pf ON (bundle_product.id = pf.bundle_product_id and features_id = 7) " .
+        "join lens on bundle_product.lens_id = lens.id " .
+        "left join lens_pictures on lens_pictures.lens_id = lens.id " .
+        "join manufacturer_lens_color on lens.manufacturer_lens_color_id = manufacturer_lens_color.id " .
+        "join lens_color on lens.lens_color_id = lens_color.id " .
+        "join lens_color_translations lct on lct.lens_color_id = lens_color.id " .
+        "left join lens_conditions_description on lens_conditions_description.lens_id = lens.id " .
+        "join manufacturer_material on (model.manufacturer_material_id = manufacturer_material.id) " .
+        "join material on (manufacturer_material.material_id = material.id) " .
+        "join gender on (gender.id = model.gender_id) " .
+        "join naming_system on (product.id = naming_system.product_id) " .
+        "left join polarized on polarized.bundle_product_id = bundle_product.id " .
+        "left join interchangeable_lens on interchangeable_lens.bundle_product_id = bundle_product.id " .
+        "left join brand_sentences ON brand.id = brand_sentences.brand_id " .
+        "left join model_sentences ON model.id = model_sentences.model_id " .
+        "left join bundle_product_sentences ON bundle_product.id = bundle_product_sentences.bundle_product_id " .
+        "join bundle_details_description bdd on bdd.bundle_product_id = bundle_product.id " .
+        "left join product_description_test product_description on (product_description.product_id = product.id) " .
+        "left join custom_description cd on cd.bundle_product_id=bundle_product.id and cd.country_id=" . $countryId . " " .
+        "where product_description.country_id = " . $countryId . " and product.sku is not null and product.shopsys_id is not null;";
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+        echo "Could not successfully run query from DB: " . mysqli_error($conn);
+        exit;
+    }
+
+    $products = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $product = new Product();
+        $lens = new Lens();
+        $interLens = new InterLens();
+
+        $product->setAttributeSet($row["attribute_set"]);
+        $product->setSku($row["sku"]);
+        $product->setModelGroup($row["model_group"]);
+        $product->setBundleProductId($row["bundle_product_id"]);
+        $product->setGender($row["gender"]);
+        $product->setBrand($row["brand"]);
+        $product->setBrandLogoUrl($row["brand_logo_url"]);
+        $product->setManufacturerSku($row["manufacturer_sku"]);
+        $product->setModel($row["model"]);
+        $product->setName($row["name"]);
+        $product->setFrameShape($row["frame_shape"]);
+        $product->setFrameType($row["frame_type"]);
+        $product->setFrameShapeUrl($row["frame_shape_url"]);
+        $product->setFaceShapeUrl($row["face_shape_url"]);
+        $product->setMaterial($row["material"]);
+        $product->setJSONTechnologies($row["technologies"]);
+        $product->setBrandSentence($row["brand_sentence_" . mb_strtolower($countryCode)]);
+        $product->setModelSentence($row["model_sentence_" . mb_strtolower($countryCode)]);
+        $product->setBundleProductSentence($row["bundle_sentence_" . mb_strtolower($countryCode)]);
+        $lens->setCategory($row["category"]);
+        $lens->setVlt($row["vlt"]);
+        $lens->setManufacturerLensColor($row["manufacturer_lens_color"]);
+        $lens->setConditions($row["lens_conditions"]);
+        $lens->setPolarized($row["polarized"]);
+        $lens->setPictureUrl($row["lens_url"]);
+        $lens->setLensColor($row["lens_color"]);
+        $lens->setLensColorUrl($row["lens_color_url"]);
+        $lens->setConditionString($row["condition_string"]);
+        $product->setLens($lens);
+        $interLens->setCategory($row["il_category"]);
+        $interLens->setConditions($row["il_lens_conditions"]);
+        $interLens->setLensColor($row["il_lens_color"]);
+        $interLens->setLensColorUrl($row["il_lens_color_url"]);
+        $interLens->setManufacturerLensColor($row["il_man_lens_color"]);
+        $interLens->setPictureUrl($row["il_picture_url"]);
+        $interLens->setVlt($row["il_vlt"]);
+        $interLens->setConditionString($row["il_condition_string"]);
+        $product->setInterLens($interLens);
+        $product->setPhotochromic($row["photochromic"]);
+        $product->setCustomDescription($row["custom_description_" . mb_strtolower($countryCode)]);
+
+
+        $products[] = $product;
+        echo 'Got product: ' . $product->getSku() . '<br>';
+    }
+
+    return $products;
+}
