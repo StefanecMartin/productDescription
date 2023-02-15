@@ -8,6 +8,7 @@ include "./objects/Product.php";
 include "./objects/Lens.php";
 include "./objects/InterLens.php";
 include "./objects/Frame.php";
+include "./objects/Country.php";
 
 
 function getConn()
@@ -29,16 +30,16 @@ function closeConn($conn)
 
 function selectCountries($conn)
 {
-    $result = mysqli_query($conn, 'select distinct country_id, country.code from product_description_test product_description join country on product_description.country_id = country.id where country.is_active = 1;');
-    $map = array();
+    $result = mysqli_query($conn, 'select distinct country_id, country.code, country.shopsys_code from product_description_test product_description join country on product_description.country_id = country.id where country.is_active = 1;');
+    $countries = [];
     while ($row = mysqli_fetch_array($result)) {
-        if ($row['code'] === "INT") {
-            $map['EN'] = $row['country_id'];
-        }
-        $map[$row['code']] = $row['country_id'];
+        $country = new Country();
+        $country->setId($row['country_id']);
+        $country->setCode($row['code'] === "INT"?"EN":$row['code']);
+        $country->setShopsysCode($row['shopsys_code']);
+        $countries[] = $country;
     }
-    //print_r($map);
-    return $map;
+    return $countries;
 }
 
 function createHelpTables($conn, $countryCode)
@@ -244,7 +245,7 @@ function selectProductData($conn, $countryCode, $countryId)
 
 
         $products[] = $product;
-        echo 'Got product: ' . $product->getSku() . '<br>';
+        //echo 'Got product: ' . $product->getSku() . '<br>';
     }
 
     return $products;
