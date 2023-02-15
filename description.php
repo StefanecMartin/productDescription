@@ -6,66 +6,38 @@ function description($conn, $product, $countryCode, $style)
     include('locale/' . $countryCode . '.php');
     $description = "";
 
-    $brandSentence = $product->getBrandSentence();
-    $modelSentence = $product->getModelSentence();
-    $bundleSentence = $product->getBundleProductSentence();
-    $att_set = $product->getAttributeSet();
-    $gender = $product->getGender();
-    $brandName = $product->getBrand();
-    $model = $product->getModel();
-    $name = $product->getName();
-    $frameType = $product->getFrameType();
-    $frameShape = $product->getFrameShape();
-    $modelGroup = $product->getModelGroup();
-    $material = $product->getMaterial();
-    $polarized = $product->getLens()->getPolarized();
-    $JSONTechnologies = $product->getJSONTechnologies();
     $vlt = ($product->getLens()->getVlt() == null) ? "-" : $product->getLens()->getVlt() . "%";
     $lensSentence = null;
-    $mLensColor = $product->getLens()->getManufacturerLensColor();
     $conditionString = ($product->getLens()->getConditionString() == null) ? "-" : $product->getLens()->getConditionString();
     $prizmVideo = "";
     $modulatorDefinition = null;
-    $bundleProductId = $product->getBundleProductId();
     $technologies = [];
-    $lensUrl = $product->getLens()->getPictureUrl();
-    $lensColor = $product->getLens()->getLensColor();
-    $lensColorUrl = $product->getLens()->getLensColorUrl();
     $lensConditions = ($product->getLens()->getConditions() == null) ? "-" : $product->getLens()->getConditions();
-    $il_mLensColor = $product->getInterLens()->getManufacturerLensColor();
-    $il_lensColor = $product->getInterLens()->getLensColor();
-    $il_pictureUrl = $product->getInterLens()->getPictureUrl();
-    $il_lensColorUrl = $product->getInterLens()->getLensColorUrl();
     $il_lensConditions = ($product->getInterLens()->getConditions() == null) ? "-" : $product->getInterLens()->getConditions();
     $il_vlt = ($product->getInterLens()->getVlt() == null) ? "-" : $product->getInterLens()->getVlt() . +"%";
     $il_condition = ($product->getInterLens()->getConditionString() == null) ? "-" : $product->getInterLens()->getConditionString();
-    $lensGuideUrl = !in_array(mb_strtolower($brandName), ["oakley", "bolle", "cebe", "smith"], true) ? "" : mb_strtolower($brandName);
+    $lensGuideUrl = !in_array(mb_strtolower($product->getBrand()), ["oakley", "bolle", "cebe", "smith"], true) ? "" : mb_strtolower($product->getBrand());
     $lensGuideSentence = $lensGuideUrl === "" ? "" : $translations['lensGuideSentence'] . " <b><u><a href=\"../" . $lensGuideUrl . "-lens-guide\" target=\"_blank\">" . $translations['here'] . "</a></u></b>.";
-    $frame_shape_url = $product->getFrameShapeUrl();
-    $face_shape_url = $product->getFaceShapeUrl();
-    $brand_logo_url = $product->getBrandLogoUrl();
-    $photochromic = $product->getPhotochromic();
-    $customDescription = $product->getCustomDescription();
 
     /*
      * START OF DESCRIPTION
      */
 
-    if ($customDescription != null) {
-        $description .= $customDescription;
+    if ($product->getCustomDescription() != null) {
+        $description .= $product->getCustomDescription();
         return $description;
     }
     $description .= "<p>";
 
-    if ("Ski Goggles" === $att_set) {
+    if ("Ski Goggles" === $product->getAttributeSet()) {
 
         $description .= "<div class=\"sosovkainfo\">" .
             "<div class=\"sosovka\">";
 
-        if ($lensUrl == null) {
+        if ($product->getLens()->getPictureUrl() == null) {
             $description .= "<img src=\"https://eyerim.com/content/wysiwyg/description/lens_pictures/no-image.png\" alt=\"No image\" style=\"max-height: 9em;\">";
         } else {
-            $description .= "<img src=\"" . $lensUrl . "\" alt=\"" . $mLensColor . "\" style=\"max-height: 9em;\">";
+            $description .= "<img src=\"" . $product->getLens()->getPictureUrl() . "\" alt=\"" . $product->getLens()->getManufacturerLensColor() . "\" style=\"max-height: 9em;\">";
         }
 
 
@@ -78,10 +50,10 @@ function description($conn, $product, $countryCode, $style)
             "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations['VLT'] . "</div>" .
             "</div>" .
             "<div class=\"inforiadok\">" .
-            "<div class=\"stvrtina\" >" . $mLensColor . "</div>" .
+            "<div class=\"stvrtina\" >" . $product->getLens()->getManufacturerLensColor() . "</div>" .
             "<div class=\"stvrtina\" >" .
-            "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $lensColor . "</div>" .
-//            "<img src=\"" . $lensColorUrl . "\" alt = \"" . $lensColor . "\" style=\"max-height: 1em;\">" .
+            "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $product->getLens()->getLensColor() . "</div>" .
+//            "<img src=\"" . $product->getLens()->getLensColorUrl() . "\" alt = \"" . $product->getLens()->getLensColor() . "\" style=\"max-height: 1em;\">" .
             "</div>" .
             "<div class=\"stvrtina\" >" .
             "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $lensConditions . "</div>" .
@@ -98,10 +70,10 @@ function description($conn, $product, $countryCode, $style)
          */
 
         if ($vlt != "-" && $conditionString != "-") {
-            if ($JSONTechnologies != null) {
-                if (str_contains(mb_strtolower($JSONTechnologies), "prizm")) {
+            if ($product->getJSONTechnologies() != null) {
+                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "prizm")) {
 
-                    $lensSentence = $brandName . " <b>" . $mLensColor . "</b> " . $translations['PRIZMGoggles'];
+                    $lensSentence = $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['PRIZMGoggles'];
 
                     $prizmVideo = "<div class=\"row\" style=\"margin-top: 50px\">" .
                         "<div class=\"col-sm-12 col-xs-12\" style=\"\">" .
@@ -113,25 +85,25 @@ function description($conn, $product, $countryCode, $style)
 
                 }
 
-                if (str_contains(mb_strtolower($JSONTechnologies), "chromapop")) {
-                    $lensSentence = $brandName . " <b>" . $mLensColor . "</b> " . $translations['CHROMAPOPGoggles'];
+                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "chromapop")) {
+                    $lensSentence = $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['CHROMAPOPGoggles'];
 
                 }
 
-                if (str_contains(mb_strtolower($JSONTechnologies), "modulator")) {
-                    $lensSentence = $brandName . " <b>" . $mLensColor . "</b> " . $translations['MODULATORGoggles'];
+                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "modulator")) {
+                    $lensSentence = $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['MODULATORGoggles'];
                     $modulatorDefinition = $translations['MODULATORDefinition'];
                 }
             }
 
             if ($lensSentence == null) {
-                $lensSentence = $brandName . $translations['premium'] . " <b>" . $mLensColor . "</b> " . $translations['lensIsPerfectFor']
+                $lensSentence = $product->getBrand() . $translations['premium'] . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['lensIsPerfectFor']
                     . $conditionString . $translations['conditions'] . ".";
             }
 
             $modulatorDefinition = $modulatorDefinition != null ? $modulatorDefinition : "";
 
-            $description .= "<p>" . $lensSentence . $translations['VLTOfLens'] . $mLensColor . $translations['is'] . " <b>" . $vlt
+            $description .= "<p>" . $lensSentence . $translations['VLTOfLens'] . $product->getLens()->getManufacturerLensColor() . $translations['is'] . " <b>" . $vlt
                 . "</b>" . $translations['VLTGoggles1'] . $vlt . $translations['VLTGoggles2'] . $modulatorDefinition
                 . ". " . $lensGuideSentence . "</p>";
         }
@@ -141,7 +113,7 @@ function description($conn, $product, $countryCode, $style)
          * INTERCHANGEABLE LENS
          */
 
-        if ($il_mLensColor != null) {
+        if ($product->getInterLens()->getManufacturerLensColor() != null) {
 
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations["extraLensIncluded"] . "</p>";
 
@@ -155,19 +127,19 @@ function description($conn, $product, $countryCode, $style)
                 "<div class=\"sosovkainfo\" style=\"width: 100%\">" .
                 "<div class=\"sosovka\">";
 
-            if ($il_pictureUrl == null) {
+            if ($product->getInterLens()->getPictureUrl() == null) {
                 $description .= "<img src=\"https://eyerim.com/content/wysiwyg/description/lens_pictures/no-image.png\" alt=\"No image\" style=\"max-height: 9em;\">";
             } else {
-                $description .= "<img src=\"" . $il_pictureUrl . "\" style=\"max-height: 9em;\">";
+                $description .= "<img src=\"" . $product->getInterLens()->getPictureUrl() . "\" style=\"max-height: 9em;\">";
             }
 
             $description .= "    </div>" .
                 "<div class=\"infocast\">" .
                 "<div class=\"inforiadok\">" .
-                "<div class=\"stvrtina\" >" . $il_mLensColor . "</div>" .
+                "<div class=\"stvrtina\" >" . $product->getInterLens()->getManufacturerLensColor() . "</div>" .
                 "<div class=\"stvrtina\" >" .
-                "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $il_lensColor . "</div>" .
-//                        "<img src=\"" . $il_lensColorUrl . "\" style=\"max-height: 1em;\">" .
+                "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $product->getInterLens()->getLensColor() . "</div>" .
+//                        "<img src=\"" . $product->getInterLens()->getLensColorUrl() . "\" style=\"max-height: 1em;\">" .
                 "</div>" .
                 "<div class=\"stvrtina\" >" .
                 "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $il_lensConditions . "</div>" .
@@ -184,9 +156,9 @@ function description($conn, $product, $countryCode, $style)
          * INCLUDEED TECHNOLOGIES
          */
 
-        if ($JSONTechnologies != null) {
+        if ($product->getJSONTechnologies() != null) {
 
-            $technologies = selectTechnologies($conn, $bundleProductId, $countryCode);
+            $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
 
             $description .= "<div style = \"font-weight: 600; text-align: center; margin-top: 3em; margin-bottom: 2em;\">" .
                 "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\"><span style=\"background-color: #fff; " .
@@ -260,33 +232,32 @@ function description($conn, $product, $countryCode, $style)
             "</div>" .
             "</div>";
 
-        if ($brandSentence != null) {
+        if ($product->getBrandSentence() != null) {
             $description .=
-                "<p style=\"text-align: justify;\">" . $brandSentence . "</p>";
+                "<p style=\"text-align: justify;\">" . $product->getBrandSentence() . "</p>";
         }
         $description .=
             "<p style=\"text-align: justify\">";
 
-        if ($gender === "Women") {
+        if ($product->getGender() === "Women") {
             $description .= $translations['womenGoggles'];
-        } else if ($gender === "Kids") {
+        } else if ($product->getGender() === "Kids") {
             $description .= $translations['childrenGoggles'];
         } else {
             $description .= $translations['goggles'];
         }
 
-        $description .= "<b>" . $model . "</b> " . $translations['brandGoggles1'] . $brandName . $translations['brandGoggles2'] . $brandName . $translations['brandGoggles3'] . "</p>";
-        $description .= "<p style=\"text-align: justify\"><br>" . $translations['delivery1'] . " <strong>" . $name . "</strong> " . $translations['delivery2'] . "</p>";
+        $description .= "<b>" . $product->getModel() . "</b> " . $translations['brandGoggles1'] . $product->getBrand() . $translations['brandGoggles2'] . $product->getBrand() . $translations['brandGoggles3'] . "</p>";
+        $description .= "<p style=\"text-align: justify\"><br>" . $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'] . "</p>";
 
         $description .= $style->getGogglesStyle();
-    }
-    else {
+    } else {
 
-        if ($bundleSentence != null) {
-            $description .= $bundleSentence;
+        if ($product->getBundleProductSentence() != null) {
+            $description .= $product->getBundleProductSentence();
         }
 
-        if ($polarized == "Yes") {
+        if ($product->getLens()->getPolarized() == "Yes") {
             $description .= "<div class=\"riadok\">" .
                 "<div class=\"polovica lavo obrazok\">" .
                 "<img src=\"https://eyerim.com/content/wysiwyg/description/features_pictures/new_polarized_icon.jpg\" alt=\"polarized\" style=\"width: 80%;vertical-align: middle;\">" .
@@ -307,21 +278,21 @@ function description($conn, $product, $countryCode, $style)
         }
 
 
-        if ($brandSentence != null) {
-            if ($brand_logo_url != null) {
+        if ($product->getBrandSentence() != null) {
+            if ($product->getBrandLogoUrl() != null) {
                 $description .= "<div class=\"riadok\">" .
                     "<div class=\"polovica lavo obrazok\">" .
-                    "<img src=\"" . $brand_logo_url . "\" alt=\"tech\" style=\"width: 50%; vertical-align: middle;\">" .
+                    "<img src=\"" . $product->getBrandLogoUrl() . "\" alt=\"tech\" style=\"width: 50%; vertical-align: middle;\">" .
                     "</div>" .
                     "<div class=\"stred\"></div>" .
                     "<div class=\"polovica pravo\">" .
-                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $brandName . "</p>" .
-                    $brandSentence .
+                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $product->getBrand(). "</p>" .
+                    $product->getBrandSentence() .
                     "</div>" .
                     "</div>" .
                     "</p>";
             } else {
-                $description .= $brandSentence;
+                $description .= $product->getBrandSentence();
             }
             $description .=
                 "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
@@ -331,22 +302,22 @@ function description($conn, $product, $countryCode, $style)
         }
 
 
-        if ($modelSentence != null) {
-            if ($frame_shape_url != null) {
+        if ($product->getModelSentence() != null) {
+            if ($product->getFrameShapeUrl() != null) {
                 $description .=
                     "<div class=\"riadok\">" .
                     "<div class=\"polovica lavo obrazok\">" .
-                    "<img src=\"" . $frame_shape_url . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
+                    "<img src=\"" . $product->getFrameShapeUrl() . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
                     "</div>" .
                     "<div class=\"stred\"></div>" .
                     "<div class=\"polovica pravo\">" .
-                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $model . "</p>" .
-                    $modelSentence .
+                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $product->getModel() . "</p>" .
+                    $product->getModelSentence() .
                     "</div>" .
                     "</div>" .
                     "</p>";
             } else {
-                $description .= $modelSentence;
+                $description .= $product->getModelSentence();
             }
             $description .=
                 "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
@@ -359,60 +330,60 @@ function description($conn, $product, $countryCode, $style)
         $description .=
             "<div class=\"riadok\">" .
             "<div class=\"polovica lavo obrazok\">" .
-            "<img src=\"" . $face_shape_url . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
+            "<img src=\"" . $product->getFaceShapeUrl() . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
             "</div>" .
             "<div class=\"stred\"></div>" .
             "<div class=\"polovica pravo\">" .
             "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['forWhom'] . "</p>";
 
-        if ($att_set == "Sunglasses") {
+        if ($product->getAttributeSet() == "Sunglasses") {
             $description .= "<strong>" . $translations['sunglasses'] . "</strong> ";
-        } else if ($att_set == "Glasses") {
+        } else if ($product->getAttributeSet() == "Glasses") {
             $description .= "<strong>" . $translations['glasses'] . "</strong> ";
         }
 
-        if ($gender == "Men") {
-            $description .= "<strong>" . $name . "</strong>" . $translations['gender1'] . $brandName . $translations['gender2men'];
-        } else if ($gender == "Women") {
-            $description .= "<strong>" . $name . "</strong>" . $translations['gender1'] . $brandName . $translations['gender2women'];
-        } else if ($gender == "Kids") {
-            $description .= "<strong>" . $name . "</strong>" . $translations['gender1'] . $brandName . $translations['gender2kids'];
-        } else if ($gender == "Men,Women") {
-            $description .= "<strong>" . $name . "</strong>" . $translations['gender1'] . $brandName . $translations['gender2unisex'];
+        if ($product->getGender() == "Men") {
+            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand(). $translations['gender2men'];
+        } else if ($product->getGender() == "Women") {
+            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2women'];
+        } else if ($product->getGender() == "Kids") {
+            $description .= "<strong>" . $product->getName(). "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2kids'];
+        } else if ($product->getGender() == "Men,Women") {
+            $description .= "<strong>" .$product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2unisex'];
         }
 
-        if ($frameType == "Full-Rim") {
+        if ($product->getFrameType() == "Full-Rim") {
             $description .= $translations['fullrim'];
-        } else if ($frameType == "Half-Rim") {
+        } else if ($product->getFrameType() == "Half-Rim") {
             $description .= $translations['halfrim'];
-        } else if ($frameType == "Rimless") {
+        } else if ($product->getFrameType() == "Rimless") {
             $description .= $translations['rimless'];
         }
 
-        if ($frameShape == "Pilot") {
-            $description .= $translations['pilot'] . $brandName . " " . $modelGroup . $translations['roundOvalSquaredFace'];
-        } else if ($frameShape == "Round") {
-            $description .= $translations['round'] . $brandName . " " . $modelGroup . $translations['squaredHeartFace'];
-        } else if ($frameShape == "Oversize") {
-            $description .= $translations['oversize'] . $brandName . " " . $modelGroup . $translations['roundFace'];
-        } else if ($frameShape == "Oval") {
-            $description .= $translations['oval'] . $brandName . " " . $modelGroup . $translations['roundOvalSquaredHeartFace'];
-        } else if ($frameShape == "Cat Eye") {
-            $description .= $translations['catEye'] . $brandName . " " . $modelGroup . $translations['roundOvalHeartFace'];
-        } else if ($frameShape == "Rectangular") {
-            $description .= $translations['rectangular'] . $brandName . " " . $modelGroup . $translations['roundOvalFace'];
-        } else if ($frameShape == "Squared") {
-            $description .= $translations['squared'] . $brandName . " " . $modelGroup . $translations['roundOvalHeartFace'];
-        } else if ($frameShape == "Single Lens") {
-            $description .= $translations['singleLens'] . $brandName . " " . $modelGroup . $translations['roundSquaredHeartFace'];
-        } else if ($frameShape == "Browline") {
-            $description .= $translations['browline'] . $brandName . " " . $modelGroup . $translations['roundOvalSquaredHeartFace'];
-        } else if ($frameShape == "Tiny") {
-            $description .= $translations['tiny'] . $brandName . " " . $modelGroup . $translations['roundOvalSquaredHeartFace'];
-        } else if ($frameShape == "Special") {
-            $description .= $translations['special'] . $brandName . " " . $modelGroup . $translations['roundOvalSquaredHeartFace'];
-        } else if ($frameShape == "Flat Top") {
-            $description .= $translations['flatTop'] . $brandName . " " . $modelGroup . $translations['roundFace'];
+        if ($product->getFrameShape() == "Pilot") {
+            $description .= $translations['pilot'] . $product->getBrand(). " " .$product->getModelGroup() . $translations['roundOvalSquaredFace'];
+        } else if ($product->getFrameShape() == "Round") {
+            $description .= $translations['round'] . $product->getBrand() . " " .$product->getModelGroup() . $translations['squaredHeartFace'];
+        } else if ($product->getFrameShape() == "Oversize") {
+            $description .= $translations['oversize'] .$product->getBrand() . " " .$product->getModelGroup() . $translations['roundFace'];
+        } else if ($product->getFrameShape() == "Oval") {
+            $description .= $translations['oval'] . $product->getBrand(). " " . $product->getModelGroup() . $translations['roundOvalSquaredHeartFace'];
+        } else if ($product->getFrameShape() == "Cat Eye") {
+            $description .= $translations['catEye'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalHeartFace'];
+        } else if ($product->getFrameShape() == "Rectangular") {
+            $description .= $translations['rectangular'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalFace'];
+        } else if ($product->getFrameShape() == "Squared") {
+            $description .= $translations['squared'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalHeartFace'];
+        } else if ($product->getFrameShape() == "Single Lens") {
+            $description .= $translations['singleLens'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundSquaredHeartFace'];
+        } else if ($product->getFrameShape() == "Browline") {
+            $description .= $translations['browline'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalSquaredHeartFace'];
+        } else if ($product->getFrameShape() == "Tiny") {
+            $description .= $translations['tiny'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalSquaredHeartFace'];
+        } else if ($product->getFrameShape() == "Special") {
+            $description .= $translations['special'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundOvalSquaredHeartFace'];
+        } else if ($product->getFrameShape() == "Flat Top") {
+            $description .= $translations['flatTop'] . $product->getBrand() . " " . $product->getModelGroup() . $translations['roundFace'];
         }
 
         $description .=
@@ -431,9 +402,9 @@ function description($conn, $product, $countryCode, $style)
             "<div class=\"polovica lavo obrazok\">" .
             "<img src=\"";
 
-        if ($photochromic == "Yes") {
+        if ($product->getPhotochromic() == "Yes") {
             $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/uv_photochrom.svg";
-        } else if ($att_set == "Sunglasses") {
+        } else if ($product->getAttributeSet() == "Sunglasses") {
             $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/uv.svg";
         } else {
             $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/glasses-material-icon.svg";
@@ -448,9 +419,9 @@ function description($conn, $product, $countryCode, $style)
 
         $description .= "<p>" . $translations['materialUsed'];
 
-        $description .= $translations[$material];
+        $description .= $translations[$product->getMaterial()];
 
-        if ($att_set == "Sunglasses") {
+        if ($product->getAttributeSet() == "Sunglasses") {
             $description .= $translations['UVlight'];
         }
 
@@ -461,9 +432,9 @@ function description($conn, $product, $countryCode, $style)
             "</div>" .
             "</p>";
 
-        if ($JSONTechnologies != null) {
+        if ($product->getJSONTechnologies() != null) {
 
-            $technologies = selectTechnologies($conn, $bundleProductId, $countryCode);
+            $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
 
             foreach ($technologies as $t) {
 
@@ -511,7 +482,7 @@ function description($conn, $product, $countryCode, $style)
             "<div class=\"stred\"></div>" .
             "<div class=\"polovica pravo\">" .
             "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['freeDelivery'] . "</p>" .
-            "<p>" . $translations['delivery1'] . " <strong>" . $name . "</strong> " . $translations['delivery2'] . "</p>" .
+            "<p>" . $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'] . "</p>" .
             "</div>" .
             "</div>" .
             "</p>";
