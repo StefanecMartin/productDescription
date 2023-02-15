@@ -9,6 +9,7 @@ include "./objects/Lens.php";
 include "./objects/InterLens.php";
 include "./objects/Frame.php";
 include "./objects/Country.php";
+include "./objects/Technology.php";
 
 
 function getConn()
@@ -249,4 +250,29 @@ function selectProductData($conn, $countryCode, $countryId)
     }
 
     return $products;
+}
+
+function selectTechnologies($conn, $bundleProductId, $countryCode){
+    $techs = [];
+    $query = "select " .
+        "technologies_description." . mb_strtolower($countryCode) . "_name, " .
+        "technologies_description." . mb_strtolower($countryCode) . "_text, " .
+        "technologies_description.image_url " .
+        "from " .
+        "bundle_product " .
+        "join product_technologies on (product_technologies.bundle_product_id = bundle_product.id) " .
+        "join technologies_description on (technologies_description.id = product_technologies.technologies_desc_id) " .
+        "where bundle_product.id = " . $bundleProductId . " and in_description = 1";
+
+    $result = mysqli_query($conn, $query);
+    $countries = [];
+
+    while ($row = mysqli_fetch_array($result)) {
+        $technology = new Technology();
+        $technology->setName($row[mb_strtolower($countryCode) . '_name']);
+        $technology->setDescription($row[mb_strtolower($countryCode) . '_text']);
+        $technology->setUrl($row['image_url']);
+        $techs[] = $technology;
+    }
+    return $techs;
 }
