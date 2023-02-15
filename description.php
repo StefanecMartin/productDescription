@@ -39,7 +39,7 @@ function description($conn, $product, $countryCode, $style)
     $il_lensConditions = ($product->getInterLens()->getConditions() == null) ? "-" : $product->getInterLens()->getConditions();
     $il_vlt = ($product->getInterLens()->getVlt() == null) ? "-" : $product->getInterLens()->getVlt() . +"%";
     $il_condition = ($product->getInterLens()->getConditionString() == null) ? "-" : $product->getInterLens()->getConditionString();
-    $lensGuideUrl = in_array(mb_strtolower($brandName), ["oakley", "bolle", "cebe", "smith"], true) ? "" : mb_strtolower($brandName);
+    $lensGuideUrl = !in_array(mb_strtolower($brandName), ["oakley", "bolle", "cebe", "smith"], true) ? "" : mb_strtolower($brandName);
     $lensGuideSentence = $lensGuideUrl === "" ? "" : $translations['lensGuideSentence'] . " <b><u><a href=\"../" . $lensGuideUrl . "-lens-guide\" target=\"_blank\">" . $translations['here'] . "</a></u></b>.";
     $frame_shape_url = $product->getFrameShapeUrl();
     $face_shape_url = $product->getFaceShapeUrl();
@@ -81,7 +81,7 @@ function description($conn, $product, $countryCode, $style)
             "<div class=\"stvrtina\" >" . $mLensColor . "</div>" .
             "<div class=\"stvrtina\" >" .
             "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $lensColor . "</div>" .
-//                    "<img src=\"" . lensColorUrl . "\" alt = \"" . lensColor . "\" style=\"max-height: 1em;\">" .
+//            "<img src=\"" . $lensColorUrl . "\" alt = \"" . $lensColor . "\" style=\"max-height: 1em;\">" .
             "</div>" .
             "<div class=\"stvrtina\" >" .
             "<div style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $lensConditions . "</div>" .
