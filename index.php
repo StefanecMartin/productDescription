@@ -3,6 +3,8 @@ include "./db.php";
 include "./description.php";
 include "./objects/Styles.php";
 
+ob_end_flush();
+ob_implicit_flush();
 
 $onix = getConn();
 
