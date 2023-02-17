@@ -16,7 +16,7 @@ function description($conn, $product, $countryCode, $style)
     $il_lensConditions = ($product->getInterLens()->getConditions() == null) ? "-" : $product->getInterLens()->getConditions();
     $il_vlt = ($product->getInterLens()->getVlt() == null) ? "-" : $product->getInterLens()->getVlt() . +"%";
     $il_condition = ($product->getInterLens()->getConditionString() == null) ? "-" : $product->getInterLens()->getConditionString();
-    $lensGuideUrl = !in_array(mb_strtolower($product->getBrand()), ["oakley", "bolle", "cebe", "smith"], true) ? "" : mb_strtolower($product->getBrand());
+    $lensGuideUrl = !in_array(strtolower($product->getBrand()), ["oakley", "bolle", "cebe", "smith"], true) ? "" : strtolower($product->getBrand());
     $lensGuideSentence = $lensGuideUrl === "" ? "" : $translations['lensGuideSentence'] . " <b><u><a href=\"../" . $lensGuideUrl . "-lens-guide\" target=\"_blank\">" . $translations['here'] . "</a></u></b>.";
 
     /*
@@ -71,7 +71,7 @@ function description($conn, $product, $countryCode, $style)
 
         if ($vlt != "-" && $conditionString != "-") {
             if ($product->getJSONTechnologies() != null) {
-                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "prizm")) {
+                if (str_contains(strtolower($product->getJSONTechnologies()), "prizm")) {
 
                     $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['PRIZMGoggles'];
 
@@ -85,12 +85,12 @@ function description($conn, $product, $countryCode, $style)
 
                 }
 
-                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "chromapop")) {
+                if (str_contains(strtolower($product->getJSONTechnologies()), "chromapop")) {
                     $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['CHROMAPOPGoggles'];
 
                 }
 
-                if (str_contains(mb_strtolower($product->getJSONTechnologies()), "modulator")) {
+                if (str_contains(strtolower($product->getJSONTechnologies()), "modulator")) {
                     $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['MODULATORGoggles'];
                     $modulatorDefinition = $translations['MODULATORDefinition'];
                 }
