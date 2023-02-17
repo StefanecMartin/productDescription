@@ -4,16 +4,18 @@ define('USER', 'onix');
 define('PASS', 'Yezu4FdAQicOwmwq3TAQ');
 define('DB', 'onix');
 
-include "./objects/Product.php";
-include "./objects/Lens.php";
-include "./objects/InterLens.php";
-include "./objects/Frame.php";
-include "./objects/Country.php";
-include "./objects/Technology.php";
+include "./Entity/Product.php";
+include "./Entity/Lens.php";
+include "./Entity/InterLens.php";
+include "./Entity/Frame.php";
+include "./Entity/Country.php";
+include "./Entity/Technology.php";
 
 
 function getConn()
 {
+    echo 'ATTEMPTING TO CONNECT TO DB<br>';
+
     $conn = mysqli_connect(HOST, USER, PASS, DB);
     if ($conn) {
         echo 'CONNECTED TO DB<br>';
