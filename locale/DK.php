@@ -75,7 +75,7 @@ $translations = array(
     "Aluminium" => "er <strong>aluminium</strong>, stærkt korrision-resistent aluminium. Brugen af aluminium er en af de nyeste trends i brille industrien. Aluminium giver stellet den samme holdbarhed som metal, men er lettere. ",
     "Carbon" => "er <strong>carbon</strong>. Carbon er en af de letteste af kendte faste stoffer, og er stærkere end stål. Stel lavet af carbon er usædvanligt lette og ekstremt holdbare. ",
     "Wood" => "er <strong>træ</strong>, the fineste naturlige material. Alle træ stel er rent kunst, der omfatter individualitet og særegenhed, hvilket kun findes i naturen. ",
-    "Steel" => "er <strong>stål</ strong>. Materialet er mere robuste end selve stålet derude, men stål er det eneste materiale med perfekt afbalanceret hårdhed, elasticitet og robusthed. Derfor er alle briller med stålramme utrolig modstandsdygtige til hverdagsbrugere. ",
+    "Steel" => "er <strong>stål</strong>. Materialet er mere robuste end selve stålet derude, men stål er det eneste materiale med perfekt afbalanceret hårdhed, elasticitet og robusthed. Derfor er alle briller med stålramme utrolig modstandsdygtige til hverdagsbrugere. ",
     "UVlight" => "Linserne er bygget til at <strong>blokere de skadelige UV stråler 100%</strong>. ",
     "freeDelivery" => "Gratis fragt"
 );
