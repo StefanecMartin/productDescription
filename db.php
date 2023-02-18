@@ -131,6 +131,7 @@ function selectProductData($conn, $countryCode, $countryId)
         "model.model_group, " .
         "gender.label as gender, " .
         "frame_shape.frame_shape, " .
+        "frame_shape.face_shape, " .
         "frame_shape.frame_shape_url, " .
         "frame_shape.face_shape_url, " .
         "frame_type.frame_type, " .
@@ -216,6 +217,7 @@ function selectProductData($conn, $countryCode, $countryId)
         $product->setModel($row["model"]);
         $product->setName($row["name"]);
         $product->setFrameShape($row["frame_shape"]);
+        $product->setFaceShape($row["face_shape"]);
         $product->setFrameType($row["frame_type"]);
         $product->setFrameShapeUrl($row["frame_shape_url"]);
         $product->setFaceShapeUrl($row["face_shape_url"]);

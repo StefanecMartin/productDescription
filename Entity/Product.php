@@ -17,6 +17,7 @@ class Product
     protected $attributeSet;
     protected $name;
     protected $frameShape;
+    protected $faceShape;
     protected $frameType;
     protected $material;
     protected $JSONTechnologies;
@@ -278,6 +279,17 @@ class Product
     public function setFrameType($frameType)
     {
         $this->frameType = $frameType;
+    }
+
+
+    public function setFaceShape($faceShape)
+    {
+        $this->faceShape = $faceShape;
+    }
+
+    public function getFaceShape()
+    {
+        return $this->faceShape;
     }
 
     public function getMaterial()

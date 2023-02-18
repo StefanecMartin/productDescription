@@ -1,5 +1,5 @@
 <?php
-
+include('elements.php');
 
 function description($conn, $product, $countryCode, $style)
 {
@@ -152,74 +152,13 @@ function description($conn, $product, $countryCode, $style)
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations['extraLensNotIncluded'] . "</p>";
         }
 
-        /*
-         * INCLUDEED TECHNOLOGIES
-         */
-
         if ($product->getJSONTechnologies() != null) {
-
             $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
+            $description .= technologiesHeader($translations['INCLUDED TECHNOLOGIES']);
 
-            $description .= "<div style = \"font-weight: 600; text-align: center; margin-top: 3em; margin-bottom: 2em;\">" .
-                "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\"><span style=\"background-color: #fff; " .
-                "padding: 0 5px; position: relative; top: -10px; letter-spacing: 2px; font-size: 12.65px;\">"
-                . $translations['INCLUDED TECHNOLOGIES'] . "</span></div></div>";
-            $techCount = 1;
-
-            foreach ($technologies as $t) {
-
-                if ($techCount % 2 != 0) {
-
-                    if ($t->getUrl() != null) {
-                        $description .=
-                            "<div class=\"riadok\">" .
-                            "<div class=\"polovica lavo obrazok\">" .
-                            "<img src=\"" . $t->getUrl() . "\" alt=\"" . $t->getName() . "\" style=\"max-width: 80%;\">" .
-                            "</div>" .
-                            "<div class=\"stred\"></div>" .
-                            "<div class=\"polovica pravo\">" . $t->getDescription() .
-                            "</div>" .
-                            "</div>";
-
-                    } else {
-                        $description .= "<div class=\"riadok\">" .
-                            "<div class=\"polovica lavo obrazok\" style=\"font-size:300%\">" . $t->getName() .
-                            "</div>" .
-                            "<div class=\"stred\"></div>" .
-                            "<div class=\"polovica pravo\">" . $t->getDescription() .
-                            "</div>" .
-                            "</div>";
-                    }
-
-                } else {
-
-                    if ($t->getUrl() != null) {
-                        $description .=
-                            "<div class=\"riadok\">" .
-                            "<div class=\"polovica pravo obrazok\">" .
-                            "<img src=\"" . $t->getUrl() . "\" alt=\"" . $t->getName() . "\" style=\"max-width: 80%;\">" .
-                            "</div>" .
-                            "<div class=\"stred\"></div>" .
-                            "<div class=\"polovica lavo\">" . $t->getDescription() .
-                            "</div>" .
-                            "</div>";
-
-                    } else {
-                        $description .= "<div class=\"riadok\">" .
-                            "<div class=\"polovica pravo obrazok\" style=\"font-size:300%\">" . $t->getName() .
-                            "</div>" .
-                            "<div class=\"stred\"></div>" .
-                            "<div class=\"polovica lavo\">" . $t->getDescription() .
-                            "</div>" .
-                            "</div>";
-                    }
-
-                }
-
-                $techCount += 1;
-
+            foreach ($technologies as $i => $t) {
+                $description .= gogglesTechnologies($t->getName(), $t->getDescription(), $t->getUrl(), $i);
             }
-
         }
 
         $description .=
@@ -252,240 +191,62 @@ function description($conn, $product, $countryCode, $style)
 
         $description .= $style->getGogglesStyle();
     } else {
-
         if ($product->getBundleProductSentence() != null) {
             $description .= $product->getBundleProductSentence();
         }
 
         if ($product->getLens()->getPolarized() == "Yes") {
-            $description .= "<div class=\"riadok\">" .
-                "<div class=\"polovica lavo obrazok\">" .
-                "<img src=\"https://eyerim.com/content/wysiwyg/description/features_pictures/new_polarized_icon.jpg\" alt=\"polarized\" style=\"width: 80%;vertical-align: middle;\">" .
-                "</div>" .
-                "<div class=\"stred\"></div>" .
-                "<div class=\"polovica pravo\">" .
-                "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['polarization'] . "</p>" .
-                "<p>" . $translations['polarizationSentence'] . "</p>" .
-                "</div>" .
-                "</div>" .
-                "</p>";
+            $description .= riadok($translations['polarization'], $translations['polarizationSentence'], "https://eyerim.com/content/wysiwyg/description/features_pictures/new_polarized_icon.jpg");
 
-            $description .=
-                "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
-                "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
-                "</div>" .
-                "</div>";
+            $description .= divider();
         }
-
 
         if ($product->getBrandSentence() != null) {
             if ($product->getBrandLogoUrl() != null) {
-                $description .= "<div class=\"riadok\">" .
-                    "<div class=\"polovica lavo obrazok\">" .
-                    "<img src=\"" . $product->getBrandLogoUrl() . "\" alt=\"tech\" style=\"width: 50%; vertical-align: middle;\">" .
-                    "</div>" .
-                    "<div class=\"stred\"></div>" .
-                    "<div class=\"polovica pravo\">" .
-                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $product->getBrand() . "</p>" .
-                    $product->getBrandSentence() .
-                    "</div>" .
-                    "</div>" .
-                    "</p>";
+                $description .= riadok($product->getBrand(), $product->getBrandSentence(), $product->getBrandLogoUrl());
             } else {
                 $description .= $product->getBrandSentence();
             }
-            $description .=
-                "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
-                "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
-                "</div>" .
-                "</div>";
+            $description .= divider();
         }
-
 
         if ($product->getModelSentence() != null) {
             if ($product->getFrameShapeUrl() != null) {
-                $description .=
-                    "<div class=\"riadok\">" .
-                    "<div class=\"polovica lavo obrazok\">" .
-                    "<img src=\"" . $product->getFrameShapeUrl() . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
-                    "</div>" .
-                    "<div class=\"stred\"></div>" .
-                    "<div class=\"polovica pravo\">" .
-                    "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $product->getModel() . "</p>" .
-                    $product->getModelSentence() .
-                    "</div>" .
-                    "</div>" .
-                    "</p>";
+                $description .= riadok($product->getModel(), $product->getModelSentence(), $product->getFrameShapeUrl());
             } else {
                 $description .= $product->getModelSentence();
             }
-            $description .=
-                "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
-                "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
-                "</div>" .
-                "</div>";
+            $description .= divider();
         }
 
+        $forWhomDesc = "<strong>" . $translations[$product->getAttributeSet()] . "</strong> ";
+        $forWhomDesc .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2' . $product->getGender()] . $translations[$product->getFrameType()];
+        $forWhomDesc .= $translations[$product->getFrameShape()] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations[$product->getFaceShape() . "Face"] . "</p>";
+        $description .= riadok($translations['forWhom'], $forWhomDesc, $product->getFaceShapeUrl());
 
-        $description .=
-            "<div class=\"riadok\">" .
-            "<div class=\"polovica lavo obrazok\">" .
-            "<img src=\"" . $product->getFaceShapeUrl() . "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
-            "</div>" .
-            "<div class=\"stred\"></div>" .
-            "<div class=\"polovica pravo\">" .
-            "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['forWhom'] . "</p>";
-
-        if ($product->getAttributeSet() == "Sunglasses") {
-            $description .= "<strong>" . $translations['sunglasses'] . "</strong> ";
-        } else if ($product->getAttributeSet() == "Glasses") {
-            $description .= "<strong>" . $translations['glasses'] . "</strong> ";
-        }
-
-        if ($product->getGender() == "Men") {
-            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2men'];
-        } else if ($product->getGender() == "Women") {
-            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2women'];
-        } else if ($product->getGender() == "Kids") {
-            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2kids'];
-        } else if ($product->getGender() == "Men,Women") {
-            $description .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2unisex'];
-        }
-
-        if ($product->getFrameType() == "Full-Rim") {
-            $description .= $translations['fullrim'];
-        } else if ($product->getFrameType() == "Half-Rim") {
-            $description .= $translations['halfrim'];
-        } else if ($product->getFrameType() == "Rimless") {
-            $description .= $translations['rimless'];
-        }
-
-        if ($product->getFrameShape() == "Pilot") {
-            $description .= $translations['pilot'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalSquaredFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Round") {
-            $description .= $translations['round'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['squaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Oversize") {
-            $description .= $translations['oversize'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Oval") {
-            $description .= $translations['oval'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalSquaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Cat Eye") {
-            $description .= $translations['catEye'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Rectangular") {
-            $description .= $translations['rectangular'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Squared") {
-            $description .= $translations['squared'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Single Lens") {
-            $description .= $translations['singleLens'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundSquaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Browline") {
-            $description .= $translations['browline'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalSquaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Tiny") {
-            $description .= $translations['tiny'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalSquaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Special") {
-            $description .= $translations['special'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundOvalSquaredHeartFace'] . "</p>";
-        } else if ($product->getFrameShape() == "Flat Top") {
-            $description .= $translations['flatTop'] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations['roundFace'] . "</p>";
-        }
-
-        $description .=
-            "</div>" .
-            "</div>" .
-            "</p>";
-
-        $description .=
-            "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
-            "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
-            "</div>" .
-            "</div>";
-
-        $description .=
-            "<div class=\"riadok\">" .
-            "<div class=\"polovica lavo obrazok\">" .
-            "<img src=\"";
+        $description .= divider();
 
         if ($product->getPhotochromic() == "Yes") {
-            $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/uv_photochrom.svg";
+            $materialsUrl = "https://eyerim.com/content/wysiwyg/description/features_pictures/uv_photochrom.svg";
         } else if ($product->getAttributeSet() == "Sunglasses") {
-            $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/uv.svg";
+            $materialsUrl = "https://eyerim.com/content/wysiwyg/description/features_pictures/uv.svg";
         } else {
-            $description .= "https://eyerim.com/content/wysiwyg/description/features_pictures/glasses-material-icon.svg";
+            $materialsUrl = "https://eyerim.com/content/wysiwyg/description/features_pictures/glasses-material-icon.svg";
         }
 
-
-        $description .= "\" alt=\"tech\" style=\"height: 10vh; vertical-align: middle;\">" .
-            "</div>" .
-            "<div class=\"stred\"></div>" .
-            "<div class=\"polovica pravo\">" .
-            "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['materials'] . "</p>";
-
-        $description .= "<p>" . $translations['materialUsed'];
-
-        $description .= $translations[$product->getMaterial()];
-
-        if ($product->getAttributeSet() == "Sunglasses") {
-            $description .= $translations['UVlight'];
-        }
-
-        $description .= "</p>";
-
-        $description .=
-            "</div>" .
-            "</div>" .
-            "</p>";
+        $materialsDesc = $translations['materialUsed'] . $translations[$product->getMaterial()] . (($product->getAttributeSet() == "Sunglasses") ? $translations['UVlight'] : "");
+        $description .= riadok($translations['materials'], $materialsDesc, $materialsUrl);
 
         if ($product->getJSONTechnologies() != null) {
-
             $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
-
             foreach ($technologies as $t) {
-
-                if ($t->getUrl() != null) {
-                    $description .=
-                        "<div style=\"margin:3em;\"></div>" .
-                        "<div class=\"riadok\">" .
-                        "<div class=\"polovica lavo obrazok\">" .
-                        "<img src=\"" . $t->getUrl() . "\" alt=\"" . $t->getName() . "\" style=\"max-width: 80%;\">" .
-                        "</div>" .
-                        "<div class=\"stred\"></div>" .
-                        "<div class=\"polovica pravo\">" .
-                        "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $t->getName() . "</p>" .
-                        "<p>" . $t->getDescription() . "</p>" .
-                        "</div>" .
-                        "</div>";
-
-                } else {
-                    $description .=
-                        "<div style=\"margin:3em;\"></div>" .
-                        "<div class=\"riadok\">" .
-                        "<div class=\"polovica lavo obrazok\" style=\"font-size:300%\">" . $t->getName() .
-                        "</div>" .
-                        "<div class=\"stred\"></div>" .
-                        "<div class=\"polovica pravo\">" .
-                        "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $t->getName() . "</p>" .
-                        "<p>" . $t->getDescription() . "</p>" .
-                        "</div>" .
-                        "</div>";
-                }
+                $description .= riadok($t->getName(), $t->getDescription(), $t->getUrl());
             }
         }
 
-        $description .=
-            "<div style=\"font-weight: 600; text-align: center; margin-top: 1em; margin-bottom: 1em;\">" .
-            "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
-            "</div>" .
-            "</div>";
+        $description .= divider();
 
-        $description .=
-            "<div class=\"riadok\">" .
-            "<div class=\"polovica lavo obrazok\">" .
-            "<img src=\"https://eyerim.com/content/wysiwyg/description/delivery.svg\" alt=\"tech\" style=\"height: 8vh;vertical-align: middle;\">" .
-            "</div>" .
-            "<div class=\"stred\"></div>" .
-            "<div class=\"polovica pravo\">" .
-            "<p class=\"blok_nadpis\" style=\"font-size: 1.3em;\">" . $translations['freeDelivery'] . "</p>" .
-            "<p>" . $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'] . "</p>" .
-            "</div>" .
-            "</div>" .
-            "</p>";
+        $description .= riadok($translations['freeDelivery'], $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'], "https://eyerim.com/content/wysiwyg/description/delivery.svg");
 
         $description .= $style->getGlassesStyle();
     }
