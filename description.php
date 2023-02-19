@@ -1,9 +1,10 @@
 <?php
 include('elements.php');
+include('locale.php');
 
 function description($conn, $product, $countryCode, $style)
 {
-    include('locale/' . $countryCode . '.php');
+    global $translations;
     $description = "";
 
     $vlt = ($product->getLens()->getVlt() == null) ? "-" : $product->getLens()->getVlt() . "%";
@@ -17,7 +18,7 @@ function description($conn, $product, $countryCode, $style)
     $il_vlt = ($product->getInterLens()->getVlt() == null) ? "-" : $product->getInterLens()->getVlt() . +"%";
     $il_condition = ($product->getInterLens()->getConditionString() == null) ? "-" : $product->getInterLens()->getConditionString();
     $lensGuideUrl = !in_array(strtolower($product->getBrand()), ["oakley", "bolle", "cebe", "smith"], true) ? "" : strtolower($product->getBrand());
-    $lensGuideSentence = $lensGuideUrl === "" ? "" : $translations['lensGuideSentence'] . " <b><u><a href=\"../" . $lensGuideUrl . "-lens-guide\" target=\"_blank\">" . $translations['here'] . "</a></u></b>.";
+    $lensGuideSentence = $lensGuideUrl === "" ? "" : $translations[$countryCode]['lensGuideSentence'] . " <b><u><a href=\"../" . $lensGuideUrl . "-lens-guide\" target=\"_blank\">" . $translations[$countryCode]['here'] . "</a></u></b>.";
 
     /*
      * START OF DESCRIPTION
@@ -44,10 +45,10 @@ function description($conn, $product, $countryCode, $style)
         $description .= "</div>" .
             "<div class=\"infocast\">" .
             "<div class=\"inforiadok\">" .
-            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations['NAME'] . "</div>" .
-            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations['COLOR'] . "</div>" .
-            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations['CONDITIONS'] . "</div>" .
-            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations['VLT'] . "</div>" .
+            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations[$countryCode]['NAME'] . "</div>" .
+            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations[$countryCode]['COLOR'] . "</div>" .
+            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations[$countryCode]['CONDITIONS'] . "</div>" .
+            "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $translations[$countryCode]['VLT'] . "</div>" .
             "</div>" .
             "<div class=\"inforiadok\">" .
             "<div class=\"stvrtina\" >" . $product->getLens()->getManufacturerLensColor() . "</div>" .
@@ -73,7 +74,7 @@ function description($conn, $product, $countryCode, $style)
             if ($product->getJSONTechnologies() != null) {
                 if (str_contains(strtolower($product->getJSONTechnologies()), "prizm")) {
 
-                    $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['PRIZMGoggles'];
+                    $lensSentence = (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations[$countryCode]['PRIZMGoggles'];
 
                     $prizmVideo = "<div class=\"row\" style=\"margin-top: 50px\">" .
                         "<div class=\"col-sm-12 col-xs-12\" style=\"\">" .
@@ -86,25 +87,25 @@ function description($conn, $product, $countryCode, $style)
                 }
 
                 if (str_contains(strtolower($product->getJSONTechnologies()), "chromapop")) {
-                    $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['CHROMAPOPGoggles'];
+                    $lensSentence = (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations[$countryCode]['CHROMAPOPGoggles'];
 
                 }
 
                 if (str_contains(strtolower($product->getJSONTechnologies()), "modulator")) {
-                    $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['MODULATORGoggles'];
-                    $modulatorDefinition = $translations['MODULATORDefinition'];
+                    $lensSentence = (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . $product->getBrand() . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations[$countryCode]['MODULATORGoggles'];
+                    $modulatorDefinition = $translations[$countryCode]['MODULATORDefinition'];
                 }
             }
 
             if ($lensSentence == null) {
-                $lensSentence = (isset($translations['prefix']) ? $translations['prefix'] : "") . $product->getBrand() . $translations['premium'] . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations['lensIsPerfectFor']
-                    . $conditionString . $translations['conditions'] . ".";
+                $lensSentence = (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . $product->getBrand() . $translations[$countryCode]['premium'] . " <b>" . $product->getLens()->getManufacturerLensColor() . "</b> " . $translations[$countryCode]['lensIsPerfectFor']
+                    . $conditionString . $translations[$countryCode]['conditions'] . ".";
             }
 
             $modulatorDefinition = $modulatorDefinition != null ? $modulatorDefinition : "";
 
-            $description .= "<p>" . $lensSentence . $translations['VLTOfLens'] . $product->getLens()->getManufacturerLensColor() . $translations['is'] . " <b>" . $vlt
-                . "</b>" . $translations['VLTGoggles1'] . $vlt . $translations['VLTGoggles2'] . $modulatorDefinition
+            $description .= "<p>" . $lensSentence . $translations[$countryCode]['VLTOfLens'] . $product->getLens()->getManufacturerLensColor() . $translations[$countryCode]['is'] . " <b>" . $vlt
+                . "</b>" . $translations[$countryCode]['VLTGoggles1'] . $vlt . $translations[$countryCode]['VLTGoggles2'] . $modulatorDefinition
                 . ". " . $lensGuideSentence . "</p>";
         }
 
@@ -115,12 +116,12 @@ function description($conn, $product, $countryCode, $style)
 
         if ($product->getInterLens()->getManufacturerLensColor() != null) {
 
-            $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations["extraLensIncluded"] . "</p>";
+            $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]["extraLensIncluded"] . "</p>";
 
             $description .= "<div style=\"font-weight: 600; text-align: center; margin-top: 3em; margin-bottom: 1em;\">" .
                 "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
                 "<span style=\"background-color: #fff; padding: 0 5px; position: relative; top: -10px; letter-spacing: 2px; font-size: 12.65px;\">" .
-                $translations["EXTRA LENS"] .
+                $translations[$countryCode]["EXTRA LENS"] .
                 "</span>" .
                 "</div>" .
                 "</div>" .
@@ -149,12 +150,12 @@ function description($conn, $product, $countryCode, $style)
                 "</div>" .
                 "</div>";
         } else {
-            $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations['extraLensNotIncluded'] . "</p>";
+            $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]['extraLensNotIncluded'] . "</p>";
         }
 
         if ($product->getJSONTechnologies() != null) {
             $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
-            $description .= technologiesHeader($translations['INCLUDED TECHNOLOGIES']);
+            $description .= technologiesHeader($translations[$countryCode]['INCLUDED TECHNOLOGIES']);
 
             foreach ($technologies as $i => $t) {
                 $description .= gogglesTechnologies($t->getName(), $t->getDescription(), $t->getUrl(), $i);
@@ -166,7 +167,7 @@ function description($conn, $product, $countryCode, $style)
             "<div style=\"font-weight: 600; text-align: center; margin-top: 3em; margin-bottom: 2em;\">" .
             "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\">" .
             "<span style=\"background-color: #fff; padding: 0 5px; position: relative; top: -10px; letter-spacing: 2px; font-size: 12.65px;\">" .
-            $translations['ABOUT BRAND'] .
+            $translations[$countryCode]['ABOUT BRAND'] .
             "</span>" .
             "</div>" .
             "</div>";
@@ -179,15 +180,15 @@ function description($conn, $product, $countryCode, $style)
             "<p style=\"text-align: justify\">";
 
         if ($product->getGender() === "Women") {
-            $description .= $translations['womenGoggles'];
+            $description .= $translations[$countryCode]['womenGoggles'];
         } else if ($product->getGender() === "Kids") {
-            $description .= $translations['childrenGoggles'];
+            $description .= $translations[$countryCode]['childrenGoggles'];
         } else {
-            $description .= $translations['goggles'];
+            $description .= $translations[$countryCode]['goggles'];
         }
 
-        $description .= (isset($translations['prefix']) ? $translations['prefix'] : "") . "<b>" . $product->getModel() . "</b> " . $translations['brandGoggles1'] . $product->getBrand() . $translations['brandGoggles2'] . $product->getBrand() . $translations['brandGoggles3'] . "</p>";
-        $description .= "<p style=\"text-align: justify\"><br>" . $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'] . "</p>";
+        $description .= (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . "<b>" . $product->getModel() . "</b> " . $translations[$countryCode]['brandGoggles1'] . $product->getBrand() . $translations[$countryCode]['brandGoggles2'] . $product->getBrand() . $translations[$countryCode]['brandGoggles3'] . "</p>";
+        $description .= "<p style=\"text-align: justify\"><br>" . $translations[$countryCode]['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations[$countryCode]['delivery2'] . "</p>";
 
         $description .= $style->getGogglesStyle();
     } else {
@@ -196,7 +197,7 @@ function description($conn, $product, $countryCode, $style)
         }
 
         if ($product->getLens()->getPolarized() == "Yes") {
-            $description .= riadok($translations['polarization'], $translations['polarizationSentence'], "https://eyerim.com/content/wysiwyg/description/features_pictures/new_polarized_icon.jpg");
+            $description .= riadok($translations[$countryCode]['polarization'], $translations[$countryCode]['polarizationSentence'], "https://eyerim.com/content/wysiwyg/description/features_pictures/new_polarized_icon.jpg");
 
             $description .= divider();
         }
@@ -219,10 +220,10 @@ function description($conn, $product, $countryCode, $style)
             $description .= divider();
         }
 
-        $forWhomDesc = "<strong>" . $translations[$product->getAttributeSet()] . "</strong> ";
-        $forWhomDesc .= "<strong>" . $product->getName() . "</strong>" . $translations['gender1'] . $product->getBrand() . $translations['gender2' . $product->getGender()] . $translations[$product->getFrameType()];
-        $forWhomDesc .= $translations[$product->getFrameShape()] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations[$product->getFaceShape() . "Face"] . "</p>";
-        $description .= riadok($translations['forWhom'], $forWhomDesc, $product->getFaceShapeUrl());
+        $forWhomDesc = "<strong>" . $translations[$countryCode][$product->getAttributeSet()] . "</strong> ";
+        $forWhomDesc .= "<strong>" . $product->getName() . "</strong>" . $translations[$countryCode]['gender1'] . $product->getBrand() . $translations[$countryCode]['gender2' . $product->getGender()] . $translations[$countryCode][$product->getFrameType()];
+        $forWhomDesc .= $translations[$countryCode][$product->getFrameShape()] . " <strong>" . $product->getBrand() . " " . $product->getModelGroup() . "</strong> " . $translations[$countryCode][$product->getFaceShape() . "Face"] . "</p>";
+        $description .= riadok($translations[$countryCode]['forWhom'], $forWhomDesc, $product->getFaceShapeUrl());
 
         $description .= divider();
 
@@ -234,8 +235,8 @@ function description($conn, $product, $countryCode, $style)
             $materialsUrl = "https://eyerim.com/content/wysiwyg/description/features_pictures/glasses-material-icon.svg";
         }
 
-        $materialsDesc = $translations['materialUsed'] . $translations[$product->getMaterial()] . (($product->getAttributeSet() == "Sunglasses") ? $translations['UVlight'] : "");
-        $description .= riadok($translations['materials'], $materialsDesc, $materialsUrl);
+        $materialsDesc = $translations[$countryCode]['materialUsed'] . $translations[$countryCode][$product->getMaterial()] . (($product->getAttributeSet() == "Sunglasses") ? $translations[$countryCode]['UVlight'] : "");
+        $description .= riadok($translations[$countryCode]['materials'], $materialsDesc, $materialsUrl);
 
         if ($product->getJSONTechnologies() != null) {
             $technologies = selectTechnologies($conn, $product->getBundleProductId(), $countryCode);
@@ -246,7 +247,7 @@ function description($conn, $product, $countryCode, $style)
 
         $description .= divider();
 
-        $description .= riadok($translations['freeDelivery'], $translations['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations['delivery2'], "https://eyerim.com/content/wysiwyg/description/delivery.svg");
+        $description .= riadok($translations[$countryCode]['freeDelivery'], $translations[$countryCode]['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations[$countryCode]['delivery2'], "https://eyerim.com/content/wysiwyg/description/delivery.svg");
 
         $description .= $style->getGlassesStyle();
     }
