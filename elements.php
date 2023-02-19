@@ -1,6 +1,40 @@
 <?php
 
-function technologiesHeader($title)
+function sosovkaInfo($url = null, $TITLE, $value)
+{
+    $text = "<div class=\"sosovkainfo\">" .
+        "<div class=\"sosovka\">";
+
+    if (!isset($url)) {
+        $text .= "<img src=\"https://eyerim.com/content/wysiwyg/description/lens_pictures/no-image.png\" alt=\"No image\" style=\"max-height: 9em;\">";
+    } else {
+        $text .= "<img src=\"" . $url . "\" style=\"max-height: 9em;\">";
+    }
+
+
+    $text .= "</div>" .
+        "<div class=\"infocast\">" .
+        "<div class=\"inforiadok\">";
+
+    foreach ($TITLE as $t) {
+        $text .= "<div class=\"stvrtina\" style=\"font-weight: bold;\">" . $t . "</div>";
+    }
+
+    $text .= "</div>" .
+        "<div class=\"inforiadok\">";
+
+    foreach ($value as $v) {
+        $text .= "<div class=\"stvrtina\" style=\"margin-top: 1.5em; margin-bottom: 0.5em;\">" . $v . "</div>";
+    }
+
+    $text .= "</div>" .
+        "</div>" .
+        "</div>";
+
+    return $text;
+}
+
+function sectionHeader($title)
 {
     return "<div style = \"font-weight: 600; text-align: center; margin-top: 3em; margin-bottom: 2em;\">" .
         "<div style=\"width: 100%; border-top: 1px solid #d0d2d3\"><span style=\"background-color: #fff; " .
