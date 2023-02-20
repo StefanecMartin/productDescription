@@ -11,7 +11,7 @@ $countries = selectCountries($onix);
     <div>
         <label for="country">Generate description for:</label>
         <select name="country" id="country">
-            <option value="">--- Choose a country ---</option>
+            <option value="all"> All </option>
             <?php
             foreach ($countries as $c){
                 echo '<option value=' . $c->getCode() . '>' . $c->getCode() . '</option>';
