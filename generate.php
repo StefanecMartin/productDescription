@@ -1,5 +1,6 @@
-<html>
+<html lang="en-us">
 <body>
+<h1 align="center" style = "font-size: 50px; font-weight: bolder;"> DESCRIPTION MASTER PROFESIONAL</h1>
 
 <button onclick="window.location.href='index.php';">
     Back
@@ -28,7 +29,7 @@ foreach ($countries as $country) {
     createHelpTables($onix, $country->getCode());
 
     $products = selectProductData($onix, $country->getCode(), $country->getId());
-    echo 'Products selected for country ' . $country->getCode() . '!<br>';
+    echo count($products) . ' products selected for country ' . $country->getCode() . '!<br>';
 
     $descFile = fopen("./DESC/DESC-" . $date . "__" . $country->getCode() . ".csv", "w") or die('Unable to open file');
     fwrite($descFile, "\"sku\",\"description_" . $country->getShopsysCode() . "\"\n");

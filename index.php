@@ -1,5 +1,6 @@
-<html>
+<html lang="en-us">
 <body>
+<h1 align="center" style = "font-size: 50px; font-weight: bolder;"> DESCRIPTION MASTER PROFESIONAL</h1>
 <?php
 include "./db.php";
 $onix = getConn();
