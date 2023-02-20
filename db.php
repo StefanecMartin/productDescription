@@ -37,7 +37,7 @@ function selectCountry($conn, $code)
     $row = mysqli_fetch_array($result);
     $country = new Country();
     $country->setId($row['id']);
-    $country->setCode($row['code'] === "INT"?"EN":$row['code']);
+    $country->setCode($row['code'] === "INT" ? "EN" : $row['code']);
     $country->setShopsysCode($row['shopsys_code']);
 
     return $country;
@@ -45,93 +45,16 @@ function selectCountry($conn, $code)
 
 function selectCountries($conn)
 {
-    $result = mysqli_query($conn, 'select distinct country_id, country.code, country.shopsys_code from product_description_test product_description join country on product_description.country_id = country.id where country.is_active = 1;');
+    $result = mysqli_query($conn, 'select distinct country_id, country.code, country.shopsys_code from product_description_test product_description join country on product_description.country_id = country.id where country.is_active = 1 order by country.code asc;');
     $countries = [];
     while ($row = mysqli_fetch_array($result)) {
         $country = new Country();
         $country->setId($row['country_id']);
-        $country->setCode($row['code'] === "INT"?"EN":$row['code']);
+        $country->setCode($row['code'] === "INT" ? "EN" : $row['code']);
         $country->setShopsysCode($row['shopsys_code']);
         $countries[] = $country;
     }
     return $countries;
-}
-
-function createHelpTables($conn, $countryCode)
-{
-    $query1 = "create table lens_conditions_description AS " .
-        "select l.id as lens_id, if(group_concat(c.id SEPARATOR ',') = '1,2,3,4', SUBSTRING_INDEX(SUBSTRING_INDEX(group_concat(c.conditions_" . strtolower($countryCode) . " SEPARATOR ' / '),' / ',4),' / ',-1) ,group_concat(c.conditions_" . strtolower($countryCode) . " SEPARATOR ' / '))  as lens_conditions, " .
-        "if(group_concat(c.id SEPARATOR ',') = '1,2,3,4', SUBSTRING_INDEX(SUBSTRING_INDEX(group_concat(c2.conditions_" . strtolower($countryCode) . " SEPARATOR ' / '),' / ',4),' / ',-1) ,group_concat(c2.conditions_" . strtolower($countryCode) . " SEPARATOR ' / '))  as condition_string " .
-        "FROM lens l " .
-        "join lens_conditions ON l.id = lens_conditions.lens_id " .
-        "join conditions c2 ON lens_conditions.conditions_id = c2.id " .
-        "join conditions_description c ON lens_conditions.conditions_id = c.id " .
-        "GROUP BY l.id;";
-
-    $query2 = "create table bundle_details_description as " .
-        "select " .
-        "bundle_product.id as bundle_product_id ,t2.concat as technologies, t10.il_man_lens_color, t10.il_lens_color, t10.il_lens_color_url,  t10.il_vlt, t10.il_category, t10.il_picture_url, t10.il_lens_conditions, t10.condition_string as il_condition_string " .
-        "from bundle_product " .
-        "left join (select " .
-        "bundle_product.id as bundle_product_id, group_concat(description.en_name separator ',') as concat " .
-        "from " .
-        "bundle_product join product_technologies on bundle_product.id = product_technologies.bundle_product_id join technologies_description description ON product_technologies.technologies_desc_id = description.id " .
-        "group by bundle_product.id) t2 on t2.bundle_product_id = bundle_product.id " .
-        "left join(" .
-        "select bundle_product_id, m.color as il_man_lens_color, l.vlt as il_vlt, l.category as il_category, lens_pictures.url as il_picture_url, lct." . strtolower($countryCode) . "_text as il_lens_color, lc.picture_url as il_lens_color_url, lcd.lens_conditions as il_lens_conditions, lcd.condition_string " .
-        "from bundle_product " .
-        "left join interchangeable_lens on bundle_product.id = interchangeable_lens.bundle_product_id " .
-        "join lens l ON interchangeable_lens.lens_id = l.id " .
-        "join manufacturer_lens_color m ON l.manufacturer_lens_color_id = m.id " .
-        "left join lens_pictures on lens_pictures.lens_id = l.id " .
-        "left join lens_conditions_description lcd on l.id = lcd.lens_id " .
-        "join lens_color lc on l.lens_color_id = lc.id " .
-        "join lens_color_translations lct on lct.lens_color_id = lc.id)t10 on t10.bundle_product_id = bundle_product.id; ";
-
-    $query3 = "alter table lens_conditions_description add FOREIGN KEY (lens_id) REFERENCES lens (id);";
-
-    $query4 = "alter table bundle_details_description add FOREIGN KEY (bundle_product_id) REFERENCES bundle_product (id);";
-
-    $query5 = "drop table if exists lens_conditions_description;";
-
-    $query6 = "drop table if exists bundle_details_description;";
-
-    if (!mysqli_query($conn, $query5)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query6)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query1)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query2)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query3)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query4)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-
-    echo 'Help tables created!<br>';
-}
-
-function dropHelpTables($conn)
-{
-    $query1 = 'drop table lens_conditions_description';
-
-    $query2 = 'drop table bundle_details_description';
-
-    if (!mysqli_query($conn, $query1)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-    if (!mysqli_query($conn, $query2)) {
-        echo("Error description: " . mysqli_error($conn));
-    }
-
-    echo 'Help tables dropped!<br>';
 }
 
 function selectProductData($conn, $countryCode, $countryId)
@@ -155,8 +78,8 @@ function selectProductData($conn, $countryCode, $countryId)
         "manufacturer_lens_color.color as manufacturer_lens_color, " .
         "lct." . strtolower($countryCode) . "_text as lens_color, " .
         "lens_color.picture_url as lens_color_url, " .
-        "lens_conditions_description.lens_conditions as lens_conditions, " .
-        "lens_conditions_description.condition_string as condition_string, " .
+        "lens_conditions_description.lens_conditions_" . strtolower($countryCode) . " as lens_conditions, " .
+        "lens_conditions_description.condition_string_" . strtolower($countryCode) . " as condition_string, " .
         "lens_pictures.url as lens_url, " .
         "brand.name as brand, " .
         "brand.brand_logo_url, " .
@@ -166,15 +89,15 @@ function selectProductData($conn, $countryCode, $countryId)
         "brand_sentences." . strtolower($countryCode) . "_text as brand_sentence_" . strtolower($countryCode) . ", " .
         "model_sentences." . strtolower($countryCode) . "_text as model_sentence_" . strtolower($countryCode) . ", " .
         "bundle_product_sentences." . strtolower($countryCode) . "_text as bundle_sentence_" . strtolower($countryCode) . ", " .
-        "bdd.technologies, " .
-        "bdd.il_man_lens_color, " .
-        "bdd.il_lens_color, " .
-        "bdd.il_vlt, " .
-        "bdd.il_category, " .
-        "bdd.il_lens_conditions, " .
-        "bdd.il_lens_color_url, " .
-        "bdd.il_picture_url, " .
-        "bdd.il_condition_string, " .
+        "t2.concat            as technologies," .
+        "t10.il_man_lens_color," .
+        "t10.il_lens_color," .
+        "t10.il_lens_color_url," .
+        "t10.il_vlt," .
+        "t10.il_category," .
+        "t10.il_picture_url," .
+        "t10.il_lens_conditions," .
+        "t10.condition_string as il_condition_string," .
         "cd.text as custom_description_" . strtolower($countryCode) . " " .
         "from " .
         "product " .
@@ -200,7 +123,21 @@ function selectProductData($conn, $countryCode, $countryId)
         "left join brand_sentences ON brand.id = brand_sentences.brand_id " .
         "left join model_sentences ON model.id = model_sentences.model_id " .
         "left join bundle_product_sentences ON bundle_product.id = bundle_product_sentences.bundle_product_id " .
-        "join bundle_details_description bdd on bdd.bundle_product_id = bundle_product.id " .
+        "left join (select " .
+        "bundle_product.id as bundle_product_id, group_concat(description.en_name separator ',') as concat " .
+        "from " .
+        "bundle_product join product_technologies on bundle_product.id = product_technologies.bundle_product_id join technologies_description description ON product_technologies.technologies_desc_id = description.id " .
+        "group by bundle_product.id) t2 on t2.bundle_product_id = bundle_product.id " .
+        "left join(" .
+        "select bundle_product_id, m.color as il_man_lens_color, l.vlt as il_vlt, l.category as il_category, lens_pictures.url as il_picture_url, lct." . strtolower($countryCode) . "_text as il_lens_color, lc.picture_url as il_lens_color_url, lcd.lens_conditions_" . strtolower($countryCode) . " as il_lens_conditions, lcd.condition_string_" . strtolower($countryCode) . " as condition_string " .
+        "from bundle_product " .
+        "left join interchangeable_lens on bundle_product.id = interchangeable_lens.bundle_product_id " .
+        "join lens l ON interchangeable_lens.lens_id = l.id " .
+        "join manufacturer_lens_color m ON l.manufacturer_lens_color_id = m.id " .
+        "left join lens_pictures on lens_pictures.lens_id = l.id " .
+        "left join lens_conditions_description lcd on l.id = lcd.lens_id " .
+        "join lens_color lc on l.lens_color_id = lc.id " .
+        "join lens_color_translations lct on lct.lens_color_id = lc.id)t10 on t10.bundle_product_id = bundle_product.id " .
         "left join product_description_test product_description on (product_description.product_id = product.id) " .
         "left join custom_description cd on cd.bundle_product_id=bundle_product.id and cd.country_id=" . $countryId . " " .
         "where product_description.country_id = " . $countryId . " and product.sku is not null and product.shopsys_id is not null;";
@@ -268,7 +205,8 @@ function selectProductData($conn, $countryCode, $countryId)
     return $products;
 }
 
-function selectTechnologies($conn, $bundleProductId, $countryCode){
+function selectTechnologies($conn, $bundleProductId, $countryCode)
+{
     $techs = [];
     $query = "select " .
         "technologies_description." . strtolower($countryCode) . "_name, " .

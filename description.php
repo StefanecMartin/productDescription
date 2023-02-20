@@ -10,8 +10,6 @@ function description($conn, $product, $countryCode, $style)
     $vlt = ($product->getLens()->getVlt() == null) ? "-" : $product->getLens()->getVlt() . "%";
     $lensSentence = null;
     $conditionString = ($product->getLens()->getConditionString() == null) ? "-" : $product->getLens()->getConditionString();
-    $prizmVideo = "";
-    $modulatorDefinition = null;
     $technologies = [];
     $lensConditions = ($product->getLens()->getConditions() == null) ? "-" : $product->getLens()->getConditions();
     $il_lensConditions = ($product->getInterLens()->getConditions() == null) ? "-" : $product->getInterLens()->getConditions();
@@ -35,10 +33,10 @@ function description($conn, $product, $countryCode, $style)
 
         /*
          * LENS SENTENCES
-         * according to the lens technology, one of the lens sentences will be choosen (e.g. PRIZM or Modulator)
+         * according to the lens technology, one of the lens sentences will be chosen (e.g. PRIZM or Modulator)
          * if vlt or conditions are missing, whole part will not be displayed
          */
-
+        $modulatorDefinition = "";
         if ($vlt != "-" && $conditionString != "-") {
             if ($product->getJSONTechnologies() != null) {
                 if (str_contains(strtolower($product->getJSONTechnologies()), "prizm")) {
@@ -60,23 +58,17 @@ function description($conn, $product, $countryCode, $style)
                     . $conditionString . $translations[$countryCode]['conditions'] . ".";
             }
 
-            $modulatorDefinition = $modulatorDefinition != null ? $modulatorDefinition : "";
-
             $description .= "<p>" . $lensSentence . $translations[$countryCode]['VLTOfLens'] . $product->getLens()->getManufacturerLensColor() . $translations[$countryCode]['is'] . " <b>" . $vlt
                 . "</b>" . $translations[$countryCode]['VLTGoggles1'] . $vlt . $translations[$countryCode]['VLTGoggles2'] . $modulatorDefinition
                 . ". " . $lensGuideSentence . "</p>";
         }
 
-
         /*
          * INTERCHANGEABLE LENS
          */
-
         if ($product->getInterLens()->getManufacturerLensColor() != null) {
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]["extraLensIncluded"] . "</p>";
-
             $description .= sectionHeader($translations[$countryCode]["EXTRA LENS"]);
-
             $description .= sosovkaInfo($product->getInterLens()->getPictureUrl(), [$translations[$countryCode]['NAME'], $translations[$countryCode]['COLOR'], $translations[$countryCode]['CONDITIONS'], $translations[$countryCode]['VLT']], [$product->getInterLens()->getManufacturerLensColor(), $product->getInterLens()->getLensColor(), $il_lensConditions, $il_vlt]);
         } else {
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]['extraLensNotIncluded'] . "</p>";
@@ -110,7 +102,6 @@ function description($conn, $product, $countryCode, $style)
 
         $description .= (isset($translations[$countryCode]['prefix']) ? $translations[$countryCode]['prefix'] : "") . "<b>" . $product->getModel() . "</b> " . $translations[$countryCode]['brandGoggles1'] . $product->getBrand() . $translations[$countryCode]['brandGoggles2'] . $product->getBrand() . $translations[$countryCode]['brandGoggles3'] . "</p>";
         $description .= "<p style=\"text-align: justify\"><br>" . $translations[$countryCode]['delivery1'] . " <strong>" . $product->getName() . "</strong> " . $translations[$countryCode]['delivery2'] . "</p>";
-
         $description .= $style->getGogglesStyle();
     } else {
         if ($product->getBundleProductSentence() != null) {

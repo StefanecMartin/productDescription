@@ -26,8 +26,8 @@ $style = new Styles();
 $date = date("Y-m-d-H-i-s");
 
 foreach ($countries as $country) {
-    createHelpTables($onix, $country->getCode());
 
+    echo 'Selecting products for country ' . $country->getCode() . '!<br>';
     $products = selectProductData($onix, $country->getCode(), $country->getId());
     echo count($products) . ' products selected for country ' . $country->getCode() . '!<br>';
 
@@ -42,7 +42,6 @@ foreach ($countries as $country) {
 
     echo 'Description generated for country ' . $country->getCode() . '!<br>';
     fclose($descFile);
-    dropHelpTables($onix);
 }
 
 
