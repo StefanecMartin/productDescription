@@ -26,6 +26,7 @@ $style = new Styles();
 $date = date("Y-m-d-H-i-s");
 
 foreach ($countries as $country) {
+    set_time_limit(30);
 
     echo 'Selecting products for country ' . $country->getCode() . '!<br>';
     $products = selectProductData($onix, $country->getCode(), $country->getId());
