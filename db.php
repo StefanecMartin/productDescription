@@ -31,6 +31,18 @@ function closeConn($conn)
     mysqli_close($conn);
 }
 
+function selectCountry($conn, $code)
+{
+    $result = mysqli_query($conn, "select country.id, country.code, country.shopsys_code from  country  where country.code=\"" . $code . "\";");
+    $row = mysqli_fetch_array($result);
+    $country = new Country();
+    $country->setId($row['id']);
+    $country->setCode($row['code'] === "INT"?"EN":$row['code']);
+    $country->setShopsysCode($row['shopsys_code']);
+
+    return $country;
+}
+
 function selectCountries($conn)
 {
     $result = mysqli_query($conn, 'select distinct country_id, country.code, country.shopsys_code from product_description_test product_description join country on product_description.country_id = country.id where country.is_active = 1;');
