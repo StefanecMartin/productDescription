@@ -6,7 +6,6 @@ include "./db.php";
 $onix = getConn();
 
 $countries = selectCountries($onix);
-echo 'testtest';
 ?>
 <form action="generate.php" method="post">
     <div>
