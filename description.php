@@ -29,7 +29,7 @@ function description($conn, $product, $countryCode, $style)
     $description .= "<p>";
 
     if ("Ski Goggles" === $product->getAttributeSet()) {
-        $description .= sosovkaInfo($product->getLens()->getPictureUrl(), [$translations[$countryCode]['NAME'], $translations[$countryCode]['COLOR'], $translations[$countryCode]['CONDITIONS'], $translations[$countryCode]['VLT']], [$product->getLens()->getManufacturerLensColor(), $product->getLens()->getLensColor(), $lensConditions, $vlt]);
+        $description .= sosovkaInfo($product->getLens()->getPictureUrl(), [$translations[$countryCode]['NAME'], $translations[$countryCode]['COLOR'], $translations[$countryCode]['CONDITIONS CAPS'], $translations[$countryCode]['VLT']], [$product->getLens()->getManufacturerLensColor(), $product->getLens()->getLensColor(), $lensConditions, $vlt]);
 
         /*
          * LENS SENTENCES
@@ -69,7 +69,7 @@ function description($conn, $product, $countryCode, $style)
         if ($product->getInterLens()->getManufacturerLensColor() != null) {
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]["extraLensIncluded"] . "</p>";
             $description .= sectionHeader($translations[$countryCode]["EXTRA LENS"]);
-            $description .= sosovkaInfo($product->getInterLens()->getPictureUrl(), [$translations[$countryCode]['NAME'], $translations[$countryCode]['COLOR'], $translations[$countryCode]['CONDITIONS'], $translations[$countryCode]['VLT']], [$product->getInterLens()->getManufacturerLensColor(), $product->getInterLens()->getLensColor(), $il_lensConditions, $il_vlt]);
+            $description .= sosovkaInfo($product->getInterLens()->getPictureUrl(), [$translations[$countryCode]['NAME'], $translations[$countryCode]['COLOR'], $translations[$countryCode]['CONDITIONS CAPS'], $translations[$countryCode]['VLT']], [$product->getInterLens()->getManufacturerLensColor(), $product->getInterLens()->getLensColor(), $il_lensConditions, $il_vlt]);
         } else {
             $description .= "<p style=\"text-align:center; margin-top: 2em;\">" . $translations[$countryCode]['extraLensNotIncluded'] . "</p>";
         }
